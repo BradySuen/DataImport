@@ -4,13 +4,10 @@ package com.suen.brady.client;
 import com.alibaba.fastjson.JSONObject;
 import com.suen.brady.utils.SQLUtil;
 import com.suen.brady.utils.SimpleName;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +50,19 @@ public class DorisClient {
         }
         catch(Exception e){
             logger.error("create database failed !");
+        }
+    }
+
+    //判断数据表是否存在
+    public static boolean isExistsTable(String databaseName,String tableName){
+        String sql = String.format("select count(1) from information_schema.tables where TABLE_SCHEMA = '%s' and TABLE_NAME = '%s'", databaseName,tableName);
+        try {
+            ResultSet resultSet = st.executeQuery(sql);
+            resultSet.next();
+            return "1".equals(resultSet.getString(1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

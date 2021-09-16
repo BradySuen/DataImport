@@ -33,7 +33,10 @@ public class ReadKafkaData {
         //创建流式环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        env.setParallelism(8);
+        env.setParallelism(1);
+        /**
+         * 并行度过大
+         */
         env.enableCheckpointing(5000);
         env.setStateBackend(new MemoryStateBackend());
 
@@ -72,7 +75,7 @@ public class ReadKafkaData {
 
         //配置Doris属性
         Properties dorisProp = new Properties();
-        dorisProp.load(new FileInputStream("/Volumes/Brady/code/DataCollect/src/main/resources/text.properties"));
+        dorisProp.load(new FileInputStream("F:\\code\\DataImport\\src\\main\\resources\\text.properties"));
         String databaseName = dorisProp.getProperty("database-name");
         String tableName = dorisProp.getProperty("table-name");
         JSONObject keyCols = JSONObject.parseObject(dorisProp.getProperty("keyCols"));
@@ -80,7 +83,7 @@ public class ReadKafkaData {
         String distributeKey = dorisProp.getProperty("distributeKey");
         JSONObject valueCols = JSONObject.parseObject(dorisProp.getProperty("valueCols"));
 
-        result.addSink(new DorisSink(databaseName,tableName,keyCols,partitionKey,distributeKey,valueCols)).setParallelism(8);
+        result.addSink(new DorisSink(databaseName,tableName,keyCols,partitionKey,distributeKey,valueCols)).setParallelism(1);
         //启动任务
         try {
             env.execute();
